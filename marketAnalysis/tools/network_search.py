@@ -8,7 +8,7 @@ load_dotenv()
 
 class SearchTools():
     # 常量
-    TOP_RESULTS = 3
+    TOP_RESULTS = 1
     SEARCH_URL = "https://google.serper.dev/search"
     NEWS_URL = "https://google.serper.dev/news"
 

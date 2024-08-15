@@ -7,7 +7,7 @@ from crewai import Agent
 
 from marketAnalysis.tools.network_search import SearchTools
 from marketAnalysis.tools.surfer_tool import SurferTool
-
+from marketAnalysis.tools.calc import CalculatorTools
 load_dotenv()
 
 
@@ -56,11 +56,12 @@ class MarketObserverAgents:
             goal=RESEARCH_ANALYST_GOAL,
             backstory=RESEARCH_ANALYST_BACKSTORY,
             verbose=True,
+            max_iter=30,
             llm=self.llm,
             tools=[
                 SearchTools.search_internet,   # 使用Serper API 搜索指定公司的信息
                 SearchTools.search_news,        # 使用Serper API 搜索指定公司的新闻
-                SurferTool.scrape_and_summarize_website  # 对网站内容进行提取并摘要
+                SurferTool.scrape_and_summarize_website,  # 对网站内容进行提取并摘要
             ]
         )
 
@@ -76,12 +77,15 @@ class MarketObserverAgents:
             goal=FINANCIAL_ANALYST_GOAL,
             backstory=FINANCIAL_ANALYST_BACKSTORY,
             verbose=True,
+            max_iter=30,
             llm=self.llm,
             tools=[
-                # TODO
+                SearchTools.search_internet,
+                SearchTools.search_news,  # 使用Serper API 搜索指定公司的新闻
+                SurferTool.scrape_and_summarize_website,  # 对网站内容进行提取并摘要
+                CalculatorTools.calculate   # 计算能力
             ]
         )
-
 
 
     def investment_consultant_employee(self):
@@ -96,8 +100,12 @@ class MarketObserverAgents:
             goal=INVESTMENT_ADVISOR_GOAL,
             backstory=INVESTMENT_ADVISOR_BACKSTORY,
             verbose=True,
+            max_iter=30,
             llm=self.llm,
             tools=[
-                # TODO
+                SearchTools.search_internet,
+                SearchTools.search_news,  # 使用Serper API 搜索指定公司的新闻
+                SurferTool.scrape_and_summarize_website,  # 对网站内容进行提取并摘要
+                CalculatorTools.calculate   # 计算能力
             ]
         )

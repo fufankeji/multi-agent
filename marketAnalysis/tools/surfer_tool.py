@@ -1,11 +1,20 @@
 import requests
-from crewai import Agent, Task, Crew
+from crewai import Agent, Task
 from langchain.tools import tool
-from unstructured.partition.html import partition_html
-from bs4 import BeautifulSoup
 from lxml import html
+from langchain_openai import ChatOpenAI
+from langchain_community.llms.chatglm3 import ChatGLM3
+import os
+from dotenv import load_dotenv
+from marketAnalysis.constant.constants import *
+
+load_dotenv()
+
+
+
 class SurferTool():
     # 设置常量
+    USE_LOCAL = os.getenv(USE_LOCAL)
     CHUNK_SIZE = 8000
     USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
 
@@ -54,17 +63,23 @@ class SurferTool():
 
         tree = html.fromstring(response.content)
         elements = tree.xpath('//p | //h1 | //div')  # 使用 XPath 选择需要的元素
-        content = "\n\n".join([html.tostring(el, encoding='unicode') for el in elements])
+        texts = [el.text_content().strip() for el in elements if el.text_content().strip()]  # 去除空白行并清除每行首尾的空白
+        content = "\n".join(texts)  # 将所有文本内容拼接起来，每段之间用一个换行符分隔
 
         chunks = [content[i:i + SurferTool.CHUNK_SIZE] for i in range(0, len(content), SurferTool.CHUNK_SIZE)]
-
         summaries = []
+
+        llm = ChatOpenAI(
+            api_key=os.getenv(OpenAI_API_KEY),
+            model=os.getenv(OpenAI_model),
+        )
+
         for i, chunk in enumerate(chunks, 1):
             agent = Agent(
                 role=SurferTool.AGENT_ROLE,
                 goal=SurferTool.AGENT_GOAL,
                 backstory=SurferTool.AGENT_BACKSTORY,
-                allow_delegation=False
+                llm=llm
             )
 
             # 创建任务
@@ -72,19 +87,22 @@ class SurferTool():
             task = Task(
                 agent=agent,
                 description=task_description,
-                expected_output="A detailed content-based summary"
+                expected_output="A detailed content-based summary",
+                allow_delegation=False
             )
-            print("我现在初始化task完成")
-            summary = task.execute()
-            print(summary)
-            summaries.append(summary)
+
+            summary = task.execute_sync()
+            # summary = task.execute()
+
+            summaries.append(summary.raw)
 
         final_summary = "\n\n".join(summaries)
         return final_summary
 
+
 def main():
     tool_instance = SurferTool()
-    website_url = 'https://www.cbsnews.com/essentials/portable-refrigerator-walmart-deal/'
+    website_url = 'https://www.mi.com/global/about/'
     summary = tool_instance.scrape_and_summarize_website(website_url)
     print(summary)
 
