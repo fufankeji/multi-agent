@@ -48,6 +48,8 @@ class MarketAnalysis:
             raise
 
 
+
+
 def run_analysis(company):
     try:
         financial_crew = MarketAnalysis(company)

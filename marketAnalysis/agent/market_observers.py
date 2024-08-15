@@ -1,12 +1,12 @@
 import os
 from dotenv import load_dotenv
 from marketAnalysis.constant.constants import *
-
 from langchain_openai import ChatOpenAI
 from langchain_community.llms.chatglm3 import ChatGLM3
-
 from crewai import Agent
 
+from marketAnalysis.tools.network_search import SearchTools
+from marketAnalysis.tools.surfer_tool import SurferTool
 
 load_dotenv()
 
@@ -44,6 +44,26 @@ class MarketObserverAgents:
                 endpoint_url=os.getenv(endpoint_url),
             )
 
+    def research_analyst_employee(self):
+        """
+        创建一个研究分析师代理。
+
+        返回:
+            Agent: 配置了研究分析师角色、目标和工具的代理。
+        """
+        return Agent(
+            role=RESEARCH_ANALYST_ROLE,
+            goal=RESEARCH_ANALYST_GOAL,
+            backstory=RESEARCH_ANALYST_BACKSTORY,
+            verbose=True,
+            llm=self.llm,
+            tools=[
+                SearchTools.search_internet,   # 使用Serper API 搜索指定公司的信息
+                SearchTools.search_news,        # 使用Serper API 搜索指定公司的新闻
+                SurferTool.scrape_and_summarize_website  # 对网站内容进行提取并摘要
+            ]
+        )
+
     def financial_analyst_employee(self):
         """
         创建一个金融分析师代理。
@@ -62,23 +82,7 @@ class MarketObserverAgents:
             ]
         )
 
-    def research_analyst_employee(self):
-        """
-        创建一个研究分析师代理。
 
-        返回:
-            Agent: 配置了研究分析师角色、目标和工具的代理。
-        """
-        return Agent(
-            role=RESEARCH_ANALYST_ROLE,
-            goal=RESEARCH_ANALYST_GOAL,
-            backstory=RESEARCH_ANALYST_BACKSTORY,
-            verbose=True,
-            llm=self.llm,
-            tools=[
-                # TODO
-            ]
-        )
 
     def investment_consultant_employee(self):
         """

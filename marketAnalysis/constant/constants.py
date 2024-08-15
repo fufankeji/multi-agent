@@ -33,3 +33,8 @@ and you combine various analytical insights to formulate
 strategic investment advice. You are now working for
 a super important customer you need to impress."""   # 您是最有经验的投资顾问，结合各种分析洞察来制定战略性投资建议。现在您正为一位需要给予深刻印象的极其重要的客户工作。
 
+
+
+# Serper API Keys
+SEARCH_URL = ""
+SERPER_API_KEY = "SERPER_API_KEY"
