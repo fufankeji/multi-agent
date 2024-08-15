@@ -7,7 +7,6 @@ from langchain_community.llms.chatglm3 import ChatGLM3
 
 from crewai import Agent
 
-
 load_dotenv()
 
 
@@ -39,28 +38,10 @@ class MarketObserverAgents:
                 model=os.getenv(OpenAI_model),
             )
         else:
-            # 使用开源模型, 这里使用的模型引擎为ChatGLM3
+            # 使用开源模型, 这里使用的模型引擎为glm4-9b-chat
             self.llm = ChatGLM3(
                 endpoint_url=os.getenv(endpoint_url),
             )
-
-    def financial_analyst_employee(self):
-        """
-        创建一个金融分析师代理。
-
-        返回:
-            Agent: 配置了金融分析师角色、目标和工具的代理。
-        """
-        return Agent(
-            role=FINANCIAL_ANALYST_ROLE,
-            goal=FINANCIAL_ANALYST_GOAL,
-            backstory=FINANCIAL_ANALYST_BACKSTORY,
-            verbose=True,
-            llm=self.llm,
-            tools=[
-                # TODO
-            ]
-        )
 
     def research_analyst_employee(self):
         """
@@ -73,6 +54,24 @@ class MarketObserverAgents:
             role=RESEARCH_ANALYST_ROLE,
             goal=RESEARCH_ANALYST_GOAL,
             backstory=RESEARCH_ANALYST_BACKSTORY,
+            verbose=True,
+            llm=self.llm,
+            tools=[
+                # TODO
+            ]
+        )
+
+    def financial_analyst_employee(self):
+        """
+        创建一个金融分析师代理。
+
+        返回:
+            Agent: 配置了金融分析师角色、目标和工具的代理。
+        """
+        return Agent(
+            role=FINANCIAL_ANALYST_ROLE,
+            goal=FINANCIAL_ANALYST_GOAL,
+            backstory=FINANCIAL_ANALYST_BACKSTORY,
             verbose=True,
             llm=self.llm,
             tools=[

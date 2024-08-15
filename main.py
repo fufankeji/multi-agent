@@ -27,14 +27,13 @@ class MarketAnalysis:
 
             research_task = tasks.research(research_analyst_agent, self.company)
             financial_task = tasks.analyst_employee(financial_analyst_agent)
-            filings_task = tasks.research_on_filling_employee(financial_analyst_agent)
             recommend_task = tasks.final_report_employee(investment_advisor_agent)
 
             print("3. Created tasks for analysis Successful !")
 
             crew = Crew(
                 agents=[research_analyst_agent, financial_analyst_agent, investment_advisor_agent],
-                tasks=[research_task, financial_task, filings_task, recommend_task],
+                tasks=[research_task, financial_task, recommend_task],
                 verbose=True
             )
 
